@@ -23,6 +23,7 @@ router.get("/:id", async (req, res) => {
 
 router.get("/search/:title", async (req,res) => {
     try {
+         const { title } = req.params;
         const jobsByTitle = await JOB.find( {title: { $regex: title, $options: "i" }})
          if (!jobsByTitle.length) {
       return res.status(404).json({ message: "No matching jobs found" });
