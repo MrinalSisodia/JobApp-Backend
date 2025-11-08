@@ -1,9 +1,7 @@
-// routes/job.routes.js
 const express = require("express");
 const router = express.Router();
 const JOB = require("./JobModel");
 
-// GET all jobs
 router.get("/", async (req, res) => {
   try {
     const jobs = await JOB.find();
@@ -13,7 +11,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET job by ID
 router.get("/:id", async (req, res) => {
   try {
     const job = await JOB.findById(req.params.id);
@@ -24,7 +21,21 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// POST new job
+router.get("/search/:title", async (req,res) => {
+    try {
+        const jobsByTitle = await JOB.find( {title: { $regex: title, $options: "i" }})
+         if (!jobsByTitle.length) {
+      return res.status(404).json({ message: "No matching jobs found" });
+    }
+
+    res.json(jobsByTitle);
+    } catch (err) {
+        console.error("Error searching jobs:", err);
+    res.status(500).json({ message: "Error searching jobs" });
+    }
+})
+
+
 router.post("/", async (req, res) => {
   try {
     const newJob = new JOB(req.body);
@@ -35,7 +46,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// DELETE job by ID
+
 router.delete("/:id", async (req, res) => {
   try {
     await JOB.findByIdAndDelete(req.params.id);
