@@ -39,13 +39,42 @@ router.get("/search/:title", async (req,res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const newJob = new JOB(req.body);
-    const savedJob = await newJob.save();
-    res.status(201).json(savedJob);
+    let { title, company, location, salary, type, description, qualifications } = req.body;
+
+
+    if (!title || !company || !location || !salary || !type || !description || !qualifications) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    if (title.length < 3 || title.length > 100) {
+      return res.status(400).json({ message: "Title must be 3–100 characters long." });
+    }
+
+    if (company.length < 2 || company.length > 100) {
+      return res.status(400).json({ message: "Company name must be 2–100 characters long." });
+    }
+
+    if (isNaN(salary) || salary <= 0) {
+      return res.status(400).json({ message: "Salary must be a valid positive number." });
+    }
+
+    const job = await JOB.create({
+      title,
+      company,
+      location,
+      salary,
+      type,
+      description,
+      qualifications,
+    });
+
+    res.status(201).json(job);
   } catch (err) {
-    res.status(400).json({ message: "Error saving job", error: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Server error creating job." });
   }
 });
+
 
 
 router.delete("/:id", async (req, res) => {
