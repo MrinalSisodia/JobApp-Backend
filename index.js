@@ -8,7 +8,13 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://job-app-frontend-amber.vercel.app/"
+    ]
+  })
+);
 app.use(express.json());
 
 // Import routes
